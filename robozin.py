@@ -1,6 +1,7 @@
 import pyautogui
 import keyboard
 import time
+import sys
 
 def alt_tab():
     keyboard.press('alt')
@@ -27,9 +28,28 @@ def apertar_enter():
     pyautogui.press('enter')
     time.sleep(0.2)
 
-# Pede ao usuário quantos números serão processados
-total_numeros = int(input("Quantos números de celular você quer processar? "))
+def esperar_por_imagem(nome_imagem, timeout=15):
+    """Espera até que a imagem apareça na tela ou até o tempo limite."""
+    print(f"⏳ Aguardando imagem '{nome_imagem}' aparecer...")
+    inicio = time.time()
+    while time.time() - inicio < timeout:
+        local = pyautogui.locateOnScreen(nome_imagem, confidence=0.8)
+        if local:
+            print("✅ Imagem detectada!")
+            return True
+        time.sleep(0.5)
+    print("⚠️ Tempo limite atingido. Imagem não detectada.")
+    return False
 
+
+# Pega o número de linhas do argumento
+if len(sys.argv) < 2:
+    print("⚠️ Nenhum argumento recebido! Abortando.")
+    sys.exit(1)
+
+total_numeros = int(sys.argv[1])
+
+print(f"🔢 Total de números a processar: {total_numeros}")
 print("Preparado! Você tem 5 segundos pra colocar o Excel em foco...")
 time.sleep(5)
 
@@ -38,28 +58,27 @@ copiar()
 alt_tab()
 apertar_tab(2)
 colar()
-time.sleep(1.5)
+esperar_por_imagem("print.png")  # Aguarda até aparecer
 pyautogui.press('down')
 apertar_tab(1)
 alt_tab()
 pyautogui.press('right')
 copiar()
 alt_tab()
-
 colar()
 apertar_enter()
 alt_tab()
 
 # Loop com contador
 for i in range(1, total_numeros):
-    print(f"Processando número {i+1} de {total_numeros}")
+    print(f"⚙️ Processando número {i+1} de {total_numeros}")
     pyautogui.press('down')
     pyautogui.press('left')
     copiar()
     alt_tab()
     apertar_tab(2)
     colar()
-    time.sleep(1.5)
+    esperar_por_imagem("print.png")  # Aguarda até aparecer
     pyautogui.press('down')
     apertar_tab(1)
     alt_tab()
